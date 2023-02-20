@@ -1,0 +1,2 @@
+CONTAINER ID   IMAGE        COMMAND                  CREATED          STATUS         PORTS                                   NAMES
+b32153893ced   srcs_nginx   "nginx -g 'daemon of…"   10 minutes ago   Up 2 minutes   0.0.0.0:443->443/tcp, :::443->443/tcp   srcs_nginx_1

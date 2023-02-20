@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+
+  nginx:
+    build: ./requirements/nginx
+    # container_name: nginx
+    ports:
+      - "443:443"
+
+    restart: always
+
+
+
+# version: "3"
+
+# services:
+#   nginx:
+#     build: .
+#     ports:
+#       - "443:443"
