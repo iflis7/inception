@@ -1,12 +1,26 @@
-FROM alpine:3.19.1
+ARG	DOMAIN_NAME
+FROM    alpine:3.19.1
 
-RUN apk add --no-cache nginx && \
-    mkdir -p /run/nginx
+LABEL   description="Inception"
+LABEL   version="1.0"
 
-COPY conf/nginx.conf /etc/nginx/
-COPY website /usr/share/nginx/html/website
+RUN     apk update && \
+    	apk add --no-cache nginx openssl ca-certificates && \
+	mkdir -p /run/nginx   
 
-EXPOSE 80
+#copy all necessary files
+COPY    tools/generate_ssl.sh /tools/
+COPY    conf/nginx.conf /etc/nginx/
+COPY    site /usr/share/nginx/site
 
-CMD ["nginx", "-g", "daemon off;"]
+#Give permissions and Run SCRIPT
+RUN     chmod +x tools/generate_ssl.sh
+RUN     tools/generate_ssl.sh DOMAIN=${DOMAIN_NAME}
+
+#Expose 80 for http and 443 for https
+EXPOSE  80
+EXPOSE  443
+
+#Launch launch
+CMD     ["nginx", "-g", "daemon off;"]
 
