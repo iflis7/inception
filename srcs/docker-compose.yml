@@ -5,11 +5,52 @@ services:
     build:
       context: ./requirements/nginx
       args:
-        - DOMAIN_NAME=${DOMAIN_NAME}
+        - DOMAIN=${DOMAIN}
       dockerfile: Dockerfile
     container_name: nginx_service
+    networks:
+      - ${NETWORK}
     ports:
       - "80:80" 
       - "443:443"
     restart: unless-stopped
+    env_file:
+      - .env
+
+  mariadb:
+    build:
+      context: ./requirements/mariadb
+      dockerfile: Dockerfile
+#    image: mariadb
+#    user: "mysql"
+#    hostname: mariadb
+    container_name: mariadb_service
+    restart: unless-stopped
+    networks:
+      - ${NETWORK}
+    ports:
+      - "3306:3306"
+#    env_file:
+#      - .env
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+  
+#  adminer:
+#    image: adminer
+#    container_name: adminer_service
+#    restart: unless-stopped
+#    networks:
+#      - ${NETWORK}
+#    ports:
+#      - '8080:8080'
+
+#    environment:
+#      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}     
+#    env_file:
+#      - .env
+
+networks:
+  inception:
+    name:   ${NETWORK}
+    driver: bridge
 
