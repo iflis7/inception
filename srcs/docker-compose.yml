@@ -26,14 +26,16 @@ services:
 #    hostname: mariadb
     container_name: mariadb_service
     restart: unless-stopped
-    networks:
-      - ${NETWORK}
+#    networks:
+#      - ${NETWORK}
     ports:
       - "3306:3306"
+    volumes:
+      - db:/var/lib/mysql
 #    env_file:
 #      - .env
-    environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+#    environment:
+#      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
   
 #  adminer:
 #    image: adminer
@@ -53,4 +55,12 @@ networks:
   inception:
     name:   ${NETWORK}
     driver: bridge
+
+volumes:
+  db: #mariadb
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${HOME}/data/db
 
