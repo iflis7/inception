@@ -1,23 +1,19 @@
-FROM alpine:3.19.1
+FROM	debian:buster
 
-# Update apk and install mariadb server
-RUN apk update && apk add --no-cache mariadb mariadb-client
+#update apt and install mariadb server
+RUN	apt-get update
+RUN	apt-get install -y mariadb-server
 
-# Expose port 
-EXPOSE 3306
+#expose port 
+EXPOSE	3306
 
-# Copy config file and init script
-COPY ./conf/mariadb.cnf /etc/mysql/mariadb.conf.d/
-COPY ./tools/init.sql /init_db.d
+#copy config file and init script
+COPY	./conf/mariadb.cnf /etc/mysql/mariadb.conf.d
+COPY	./tools/init.sql /var/www/
 
-# Initialize the database
-RUN mysql_install_db --user=mysql --ldata=/var/lib/mysql
+#start mariadb and run init script
+RUN	service mysql start && mysql < /var/www/init.sql && rm -f /var/www/init.sql;
 
-# Use a custom script to start mariadb, run your script, and then safely stop mariadb
-COPY ./tools/docker-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-
-ENTRYPOINT ["docker-entrypoint.sh"]
-
+#start mariadb
 CMD ["mysqld"]
 

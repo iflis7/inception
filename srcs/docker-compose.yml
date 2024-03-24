@@ -11,45 +11,50 @@ services:
     networks:
       - ${NETWORK}
     ports:
-      - "80:80" 
+      - "8080:8080" 
       - "443:443"
     restart: unless-stopped
+    volumes:
+      - wp:/var/www/html
+    depends_on:
+      - wordpress
     env_file:
       - .env
 
+  wordpress:
+    build: ./requirements/wordpress
+    #image: wordpress
+    container_name: wordpress_service
+    restart: unless-stopped
+    networks:
+      - ${NETWORK}
+    volumes:
+      - wp:/var/www/html
+    environment:
+      - WORDPRESS_DB_HOST=mariadb_service
+      - WORDPRESS_DB_NAME=wordpress
+      - WORDPRESS_DB_USER=hsaadi
+      - WORDPRESS_DB_PASSWORD=root123
+    env_file:
+      - .env 
+    depends_on:
+      - mariadb
+
   mariadb:
-    build:
-      context: ./requirements/mariadb
-      dockerfile: Dockerfile
-#    image: mariadb
-#    user: "mysql"
-#    hostname: mariadb
+    build: ./requirements/mariadb
     container_name: mariadb_service
     restart: unless-stopped
-#    networks:
-#      - ${NETWORK}
-    ports:
-      - "3306:3306"
+    networks:
+      - ${NETWORK}
     volumes:
       - db:/var/lib/mysql
-#    env_file:
-#      - .env
-#    environment:
-#      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-  
-#  adminer:
-#    image: adminer
-#    container_name: adminer_service
-#    restart: unless-stopped
-#    networks:
-#      - ${NETWORK}
-#    ports:
-#      - '8080:8080'
-
-#    environment:
-#      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}     
-#    env_file:
-#      - .env
+    environment:
+      - MYSQL_ROOT_PASSWORD=root123
+      - MYSQL_DATABASE=wordpress
+      - MYSQL_USER=hsaadi
+      - MYSQL_PASSWORD=root123
+    env_file:
+      - .env
 
 networks:
   inception:
@@ -57,7 +62,14 @@ networks:
     driver: bridge
 
 volumes:
-  db: #mariadb
+  wp:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${HOME}/data/wp
+
+  db:
     driver: local
     driver_opts:
       type: none

@@ -1,5 +1,4 @@
-
-# Configuration for standalone daemon and embedded server
+# Configuration for standalone daemon and embedded servers
 [server]
 [mysqld]
 
@@ -28,4 +27,3 @@ collation-server        = utf8mb4_general_ci
 [embedded]
 [mariadb]
 [mariadb-10.3]
-
