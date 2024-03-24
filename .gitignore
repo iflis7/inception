@@ -1,4 +1,6 @@
-# Root
-.env
+# Ignore all dotfiles
+.*
 
-Dockerfile.s*
+# But keep .gitignore
+!.gitignore
+
