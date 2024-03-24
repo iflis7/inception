@@ -31,10 +31,10 @@ services:
     volumes:
       - wp:/var/www/html
     environment:
-      - WORDPRESS_DB_HOST=mariadb_service
-      - WORDPRESS_DB_NAME=wordpress
-      - WORDPRESS_DB_USER=hsaadi
-      - WORDPRESS_DB_PASSWORD=root123
+      - MYSQL_HOST=mariadb_service
+      - MYSQL_NAME=wordpress
+      - MYSQL_USER=hsaadi
+      - MYSQL_ROOT_PASSWORD=root123
     env_file:
       - .env 
     depends_on:
@@ -48,6 +48,7 @@ services:
       - ${NETWORK}
     volumes:
       - db:/var/lib/mysql
+    hostname: mariadb_service
     environment:
       - MYSQL_ROOT_PASSWORD=root123
       - MYSQL_DATABASE=wordpress
