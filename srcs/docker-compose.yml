@@ -7,7 +7,7 @@ services:
       args:
         - DOMAIN=${DOMAIN}
       dockerfile: Dockerfile
-    container_name: nginx_service
+    container_name: nginx
     networks:
       - ${NETWORK}
     ports:
@@ -23,18 +23,14 @@ services:
 
   wordpress:
     build: ./requirements/wordpress
+    image: nginx:42
     #image: wordpress
-    container_name: wordpress_service
+    container_name: wordpress
     restart: unless-stopped
     networks:
       - ${NETWORK}
     volumes:
       - wp:/var/www/html
-    environment:
-      - MYSQL_HOST=mariadb_service
-      - MYSQL_NAME=wordpress
-      - MYSQL_USER=hsaadi
-      - MYSQL_ROOT_PASSWORD=root123
     env_file:
       - .env 
     depends_on:
@@ -42,18 +38,13 @@ services:
 
   mariadb:
     build: ./requirements/mariadb
-    container_name: mariadb_service
+    container_name: mariadb
     restart: unless-stopped
     networks:
       - ${NETWORK}
     volumes:
       - db:/var/lib/mysql
     hostname: mariadb_service
-    environment:
-      - MYSQL_ROOT_PASSWORD=root123
-      - MYSQL_DATABASE=wordpress
-      - MYSQL_USER=hsaadi
-      - MYSQL_PASSWORD=root123
     env_file:
       - .env
 

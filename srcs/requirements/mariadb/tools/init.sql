@@ -4,3 +4,4 @@ CREATE USER IF NOT EXISTS 'hsaadi'@'%' IDENTIFIED BY 'root123';
 GRANT ALL PRIVILEGES ON wordpress.* TO 'hsaadi'@'%';
 FLUSH PRIVILEGES;
 ALTER USER 'root'@'localhost' IDENTIFIED BY 'root123';
+

@@ -1,19 +1,12 @@
-FROM	debian:buster
+FROM debian:buster
 
-#update apt and install mariadb server
-RUN	apt-get update
-RUN	apt-get install -y mariadb-server
+RUN apt-get update -y && apt-get install mariadb-server -y
 
-#expose port 
-EXPOSE	3306
+COPY ./conf/mariadb.cnf /etc/mysql/mariadb.conf.d/
 
-#copy config file and init script
-COPY	./conf/mariadb.cnf /etc/mysql/mariadb.conf.d
-COPY	./tools/init.sql /var/www/
+COPY ./tools/init.sh /
 
-#start mariadb and run init script
-RUN	service mysql start && mysql < /var/www/init.sql && rm -f /var/www/init.sql;
+RUN chmod +x ./init.sh
 
-#start mariadb
-CMD ["mysqld"]
+CMD ["/init.sh"]
 
