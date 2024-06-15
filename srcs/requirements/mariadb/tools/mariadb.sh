@@ -1,22 +1,29 @@
 #!/bin/bash
 
+# Change ownership of MySQL data directory to mysql user
 chown -R mysql:mysql /var/lib/mysql
 
+# Initialize MySQL data directory and suppress output
 mysql_install_db --datadir=/var/lib/mysql --user=mysql --skip-test-db >> /dev/null
 
-OUTFILE='tmpfile.sql'
+# Temporary SQL file for MySQL commands
+TEMPFILE='tmpfile.sql'
 
-echo "FLUSH PRIVILEGES;" > $OUTFILE
-echo "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;" >> $OUTFILE
-echo "CREATE USER IF NOT EXISTS \`${MYSQL_USER}\`@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';" >> $OUTFILE
-echo "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO \`${MYSQL_USER}\`@'%';" >> $OUTFILE
-echo "ALTER USER \`root\`@\`localhost\` IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';" >> $OUTFILE
-echo "GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION;" >> $OUTFILE
-echo "FLUSH PRIVILEGES;" >> $OUTFILE
+# Write SQL commands to the temporary SQL file
+echo "FLUSH PRIVILEGES;" > $TEMPFILE
+echo "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;" >> $TEMPFILE
+echo "CREATE USER IF NOT EXISTS \`${MYSQL_USER}\`@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';" >> $TEMPFILE
+echo "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO \`${MYSQL_USER}\`@'%';" >> $TEMPFILE
+echo "ALTER USER \`root\`@\`localhost\` IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';" >> $TEMPFILE
+echo "GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION;" >> $TEMPFILE
+echo "FLUSH PRIVILEGES;" >> $TEMPFILE
 
-mysqld --user=mysql --bootstrap < $OUTFILE
+# Bootstrap MySQL server with the temporary SQL file
+mysqld --user=mysql --bootstrap < $TEMPFILE
 
-rm -f $OUTFILE
+# Remove the temporary SQL file
+rm -f $TEMPFILE
 
+# Start MySQL server in safe mode
 exec mysqld_safe
 
