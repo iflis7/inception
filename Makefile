@@ -12,6 +12,7 @@ DATA_WP_DIR = /home/hsaadi/data/wp
 # Define colors for pretty print
 GREEN=\033[0;32m
 NC=\033[0m # No Color
+WARN_COLOR  = \033[0;33m
 
 # Define .PHONY to tell make these targets are not files
 .PHONY: ps build up down clean stop delete prune rebuild help
@@ -20,10 +21,11 @@ NC=\033[0m # No Color
 default: help
 
 # The setup target for creating necessary directories
-setup:
+config:
 	@echo "${GREEN}Checking and creating necessary data directories...${NC}"
-	@echo "${GREEN} UUUUUSSSSSERRRRRR ...$(DATA_DB_DIR) $(DATA_WP_DIR) "
 	@mkdir -p $(DATA_DB_DIR) $(DATA_WP_DIR)
+
+setup: config kabylia
 
 # List all containers
 ps:
@@ -88,12 +90,6 @@ vprune:
 nprune:
 	@echo "${GREEN}Removing all unused Docker networks...${NC}"
 	@$(DOCKER) network prune -f
-wild:
-# docker stop $(docker ps -qa)
-# docker rm $(docker ps -qa)
-	docker rmi -f $(docker images -qa)
-	docker volume rm $(docker volume ls -q)
-	docker network rm $(docker network ls -q) 2>/dev/null"
 
 # Display help for commands
 help:
@@ -112,3 +108,24 @@ help:
 	@echo "volume-prune  : Remove all unused Docker volumes"
 	@echo "network-prune : Remove all unused Docker networks"
 	@echo "help          : Display this help"
+
+
+kabylia:
+	@printf "%b" "$(WARN_COLOR)"
+	@echo " ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿ FREE KABYLIA ⵣ  ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿ "
+	@echo " ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿ "
+	@echo " ⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠿⠿⠿⠿⠿⠻⠿⠿⠿⠿⠿⠿⠿⠿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠿⠛⠉⠉⠻⣿⣿⣿ "
+	@echo " ⣿⡿⠿⣿⡿⠟⠛⠉⠠⠐⢀⠐⡀⠂⠄⡐⠀⢂⠐⢀⠂⡐⠠⠈⢸⠀⠈⠛⠻⣿⣿⣿⣿⣿⣿⠿⠋⠁⠀⠉⠁⠀⠀⠀⠀⠀⠀⠹⣿⣿ "
+	@echo " ⣿⣷⠀⢠⠀⠂⡌⠀⢡⠐⠀⠂⢠⠈⠀⠐⠈⠀⠐⢠⠀⠐⠀⢡⢸⠀⠀⠀⠀⠘⣿⣿⣿⣿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⣿ "
+	@echo " ⣿⣿⠀⢂⠈⡀⠄⡈⠄⠐⠠⢈⠀⢂⠁⠢⠑⠈⠄⣾⣞⡇⠐⠀⣾⡶⠀⠀⢰⣶⡎⠉⠉⠐⡀⠀⠀⠀⢀⣀⣀⣠⣶⣦⣤⣤⣶⣶⣶⣿ "
+	@echo " ⣿⣿⣇⠀⠂⠄⡐⠀⠄⡁⠂⠄⡈⠀⢎⠂⠃⢋⠀⠙⠾⠷⠤⡥⣿⡽⠠⠤⠜⠓⠁⠀⠐⠪⡗⠌⠀⠀⠘⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿ "
+	@echo " ⣿⣿⣿⣷⣬⣶⡄⠈⠄⠐⡀⢂⠠⠡⠘⣁⡝⡆⠠⢁⣤⣤⡤⠤⣿⡽⠤⠤⣀⣀⠀⠀⢠⠚⢗⢀⠀⠀⠀⠘⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿ "
+	@echo " ⣿⣿⣿⣿⣿⣿⠃⡈⠐⠠⠐⠀⠄⠂⢁⠪⣑⠓⡄⣿⣻⠆⠀⡀⣿⣳⠀⠀⢸⣟⡇⢀⠬⣴⠃⠁⠀⠀⠀⠀⠈⢿⣿⣿⣿⣿⣿⣿⣿⣿ "
+	@echo " ⣿⣿⣿⣿⣿⡟⠃⢀⠁⠂⠌⠐⠠⠁⠂⠢⣈⢡⣐⣈⢁⠁⠂⠄⢹⠀⠀⠀⠀⡠⠠⣈⠧⠀⠒⠀⠀⠀⠀⠀⠀⢺⣿⣿⣿⣿⣿⣿⣿⣿ "
+	@echo " ⣿⣿⣿⣿⡟⠃⡐⠠⠈⠐⠠⠁⢂⠈⠄⢁⠀⡐⣆⢈⡠⡣⡨⢀⣸⠀⣀⢀⢦⡒⢌⠌⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿ "
+	@echo " ⣿⣿⣿⣿⣿⣿⣦⡀⡡⠈⠐⡀⠂⢤⣾⣶⣷⣶⣶⣿⡆⠓⠂⢁⢸⠈⠁⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⠀⠀⣸⣿⣿⣿⣿⣿⣿⣿ "
+	@echo " ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣤⣃⣠⣀⣼⣿⣿⣿⣿⣿⡟⠀⡀⠃⣄⣸⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣧⣼⣿⣿⣿⣿⣿⣿⣿⣿ "
+	@echo " ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣶⣿⣿⣿⣿⣷⣤⣀⠀⠀⠀⠀⠀⢠⣤⣤⣤⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿ "
+	@echo " ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣦⣄⣀⣀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿ "
+	@echo " ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿ "
+	
