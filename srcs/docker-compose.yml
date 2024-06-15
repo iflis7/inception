@@ -1,70 +1,61 @@
-version: '3.9'
-
 services:
   nginx:
-    build:
-      context: ./requirements/nginx
-      args:
-        - DOMAIN=${DOMAIN}
-      dockerfile: Dockerfile
     container_name: nginx
-    networks:
-      - ${NETWORK}
-    ports:
-      - "8080:8080" 
-      - "443:443"
-    restart: unless-stopped
+    build: ./requirements/nginx
     volumes:
       - wp:/var/www/html
+    ports:
+      - 443:443
     depends_on:
       - wordpress
-    env_file:
-      - .env
-
-  wordpress:
-    build: ./requirements/wordpress
-    image: nginx:42
-    #image: wordpress
-    container_name: wordpress
-    restart: unless-stopped
     networks:
       - ${NETWORK}
+    restart: unless-stopped
+  
+  wordpress:
+    build: ./requirements/wordpress
+    container_name: wordpress
+    env_file:
+      - .env
     volumes:
       - wp:/var/www/html
-    env_file:
-      - .env 
+    ports:
+      - 9000:9000
     depends_on:
       - mariadb
-
+    networks:
+      - ${NETWORK}
+    restart: unless-stopped
+  
   mariadb:
     build: ./requirements/mariadb
     container_name: mariadb
-    restart: unless-stopped
-    networks:
-      - ${NETWORK}
-    volumes:
-      - db:/var/lib/mysql
-    hostname: mariadb_service
     env_file:
       - .env
-
-networks:
-  inception:
-    name:   ${NETWORK}
-    driver: bridge
+    volumes:
+      - db:/var/lib/mysql
+    ports:
+      - 3306:3306
+    networks:
+      - ${NETWORK}
+    restart: unless-stopped
 
 volumes:
-  wp:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${HOME}/data/wp
-
   db:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${HOME}/data/db
+      device: /home/hsaadi/data/db
+  
+  wp:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/hsaadi/data/wp
 
+networks:
+  inception:
+    name: ${NETWORK}
+    driver: bridge

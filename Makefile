@@ -6,8 +6,8 @@ DOCKER_COMPOSE = $(CMD_PREFIX) docker compose -f $(DC_SRC)
 DOCKER = $(CMD_PREFIX) docker
 
 # Path definitions for data directories
-DATA_DB_DIR = /home/iflis/data/db
-DATA_WP_DIR = /home/iflis/data/wp
+DATA_DB_DIR = /home/hsaadi/data/db
+DATA_WP_DIR = /home/hsaadi/data/wp
 
 # Define colors for pretty print
 GREEN=\033[0;32m
@@ -21,27 +21,28 @@ default: help
 
 # The setup target for creating necessary directories
 setup:
-	@echo -e "${GREEN}Checking and creating necessary data directories...${NC}"
+	@echo "${GREEN}Checking and creating necessary data directories...${NC}"
+	@echo "${GREEN} UUUUUSSSSSERRRRRR ...$(DATA_DB_DIR) $(DATA_WP_DIR) "
 	@mkdir -p $(DATA_DB_DIR) $(DATA_WP_DIR)
 
 # List all containers
 ps:
-	@echo -e "${GREEN}Here are all the containers...${NC}"
+	@echo "${GREEN}Here are all the containers...${NC}"
 	@$(DOCKER) ps -a
 
 # Build or rebuild services
 build: setup
-	@echo -e "${GREEN}Building the Docker images...${NC}"
+	@echo  "${GREEN}Building the Docker images...${NC}"
 	@$(DOCKER_COMPOSE) build
 
 # Start services
 up: setup
-	@echo -e "${GREEN}Starting up the containers...${NC}"
-	@$(DOCKER_COMPOSE) up -d
+	@echo  "${GREEN}Starting up the containers...${NC}"
+	@$(DOCKER_COMPOSE) up
 
 # Stop services
 down:
-	@echo -e "${GREEN}Stopping the containers...${NC}"
+	@echo "${GREEN}Stopping the containers...${NC}"
 	@$(DOCKER_COMPOSE) down
 
 # Stop and remove containers, networks
@@ -49,20 +50,20 @@ clean: stop delete
 
 # Stop all running containers
 stop:
-	@echo -e "${GREEN}Stopping all containers...${NC}"
+	@echo "${GREEN}Stopping all containers...${NC}"
 	@$(DOCKER) stop $$(docker ps -aq)
 
 # Delete all stopped containers
 delete:
-	@echo -e "${GREEN}Removing all containers...${NC}"
+	@echo "${GREEN}Removing all containers...${NC}"
 	@$(DOCKER) rm $$(docker ps -aq)
 
 rmimage:
-	@echo -e "${GREEN}Removing all images...${NC}"
+	@echo "${GREEN}Removing all images...${NC}"
 	@$(DOCKER) rmi $$(docker images -aq)
 # Remove all unused containers, networks, images (both dangling and unreferenced), and optionally, volumes.
 prune:
-	@echo -e "${GREEN}Removing unused Docker assets...${NC}"
+	@echo "${GREEN}Removing unused Docker assets...${NC}"
 	@$(DOCKER) system prune -a
 
 # Rebuild and restart the containers
@@ -70,23 +71,29 @@ rebuild: down build up
 
 # List all Docker volumes
 vls:
-	@echo -e "${GREEN}Listing all Docker volumes...${NC}"
+	@echo "${GREEN}Listing all Docker volumes...${NC}"
 	@$(DOCKER) volume ls
 
 # List all Docker networks
 nls:
-	@echo -e "${GREEN}Listing all Docker networks...${NC}"
+	@echo "${GREEN}Listing all Docker networks...${NC}"
 	@$(DOCKER) network ls
 
 # Remove all unused Docker volumes
 vprune:
-	@echo -e "${GREEN}Removing all unused Docker volumes...${NC}"
-	@$(DOCKER) volume rm $$(docker volume ls -q) 
+	@echo "${GREEN}Removing all unused Docker volumes...${NC}"
+	@$(DOCKER) volume rm $$(docker volume ls -q)
 
 # Remove all unused Docker networks
 nprune:
-	@echo -e "${GREEN}Removing all unused Docker networks...${NC}"
+	@echo "${GREEN}Removing all unused Docker networks...${NC}"
 	@$(DOCKER) network prune -f
+wild:
+# docker stop $(docker ps -qa)
+# docker rm $(docker ps -qa)
+	docker rmi -f $(docker images -qa)
+	docker volume rm $(docker volume ls -q)
+	docker network rm $(docker network ls -q) 2>/dev/null"
 
 # Display help for commands
 help:
@@ -105,4 +112,3 @@ help:
 	@echo "volume-prune  : Remove all unused Docker volumes"
 	@echo "network-prune : Remove all unused Docker networks"
 	@echo "help          : Display this help"
-

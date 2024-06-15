@@ -1,33 +1,21 @@
-FROM	debian:buster
+FROM debian:oldstable
 
-#Maintainer
-LABEL	description="WordPress Inception"
-LABEL	version="1.0"
+RUN apt update -y && apt upgrade -y
+RUN apt install -y php-fpm wget php-mysql mariadb-client
 
-#Install php-fmp
-RUN	apt-get update
-RUN	apt-get -y install php7.3 php-mysqli php-fpm wget sendmail curl 
-
-#RUN	mkdir -p /var/www/html
-
-#Expose wp port
-EXPOSE	9000
-
-#Copy the config file
-COPY	./conf/www.conf /etc/php/7.3/fpm/pool.d
-COPY	./tools /var/www/
-
-#COPY	./conf/wp-config.php /var/www/html
+COPY conf/www.conf /etc/php/7.4/fpm/pool.d/
 
 
-#RUN	mkdir - /var/www/html
-# Give permissions to run the script
-RUN	chmod +x /var/www/setup_wp.sh
+RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
 
-# Run the script
-ENTRYPOINT	[ "/var/www/setup_wp.sh" ]
+RUN chmod +x wp-cli.phar
+RUN mv wp-cli.phar /usr/local/bin/wp
 
-#Start the php-fpm server
-CMD ["/usr/sbin/php-fpm7.3", "--nodaemonize"]
+COPY tools/wordpress.sh /wordpress.sh
+RUN  chmod +x /wordpress.sh
 
+EXPOSE 9000
 
+WORKDIR /var/www/html
+
+ENTRYPOINT [ "/wordpress.sh" ]

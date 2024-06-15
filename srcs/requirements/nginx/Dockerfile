@@ -1,29 +1,20 @@
-FROM    alpine:3.19.1
+FROM debian:oldstable
 
-ARG	DOMAIN
+RUN apt update  -y && apt upgrade -y
+RUN apt install -y nginx openssl 
 
-LABEL   description="Inception"
-LABEL   version="1.0"
+RUN mkdir -p /etc/nginx/ssl
 
-RUN     apk update && \
-    	apk add --no-cache nginx openssl ca-certificates && \
-	mkdir -p /run/nginx /etc/ssl/private /etc/ssl/certs  
+RUN openssl req -newkey rsa:4096 -x509 -sha256 -days 365 -nodes \
+    -out    /etc/ssl/certs/cert.crt \
+    -keyout /etc/ssl/private/key.key \
+    -subj "/C=CA/ST=Quebec/L=Quebec/O=42/OU=inception/CN=hsaadi.42.fr"
 
-#copy all necessary files
-COPY    tools/generate_ssl.sh /tools/
-COPY    conf/nginx.conf /etc/nginx/
-COPY    site /usr/share/nginx/site
+COPY conf/ngnix.conf /etc/nginx/conf.d/nginx.conf
 
-ENV DOMAIN=${DOMAIN}
+# Use envsubst to replace environment variables in the Nginx configuration
+RUN sed -i 's/\hsaadi.42.fr/"hsaadi.42.fr"/g' /etc/nginx/conf.d/nginx.conf
 
-#Give permissions and Run SCRIPT
-RUN	chmod +w /etc/ssl/private /etc/ssl/certs 
-RUN     chmod +x tools/generate_ssl.sh && \
-	tools/generate_ssl.sh $DOMAIN
+EXPOSE 443
 
-#Expose 80 for http and 443 for https
-EXPOSE  80 443
-
-#Launch launch
-CMD     ["nginx", "-g", "daemon off;"]
-
+CMD [ "nginx", "-g", "daemon off;"]
